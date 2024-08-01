@@ -1,32 +1,57 @@
+import { initModules } from "@oceanity/firebot-helpers/firebot";
 import { Firebot } from "@crowbartools/firebot-custom-scripts-types";
+import * as packageJson from "../package.json";
+import { VeadtoubeService } from "./veadotube";
+import { AllVeadotubeEffects } from "./veadotube/effects";
+import { setupFrontendListeners } from "./veadotube/communicator";
+import { initRemote } from "./veadotube/veadotube-remote";
+
+export const { displayName: name, description, version, author } = packageJson;
+
+export let veadotube: VeadtoubeService;
 
 interface Params {
-  message: string;
+  veadotubeServer: string;
 }
 
 const script: Firebot.CustomScript<Params> = {
   getScriptManifest: () => {
     return {
-      name: "Starter Custom Script",
-      description: "A starter custom script for build",
-      author: "SomeDev",
-      version: "1.0",
+      name,
+      description,
+      author,
+      version,
       firebotVersion: "5",
     };
   },
   getDefaultParameters: () => {
     return {
-      message: {
+      veadotubeServer: {
         type: "string",
-        default: "Hello World!",
-        description: "Message",
-        secondaryDescription: "Enter a message here",
+        default: "127.0.0.1:<port>",
+        description: "Veadotube Server Address",
+        secondaryDescription: "Enter your server IP address and port, be sure to set it in manually in `program settings` in Veadotube or the port will change every time you restart Veadotub",
       },
     };
   },
   run: (runRequest) => {
-    const { logger } = runRequest.modules;
-    logger.info(runRequest.parameters.message);
+    const { modules, parameters } = runRequest;
+
+    if (!parameters.veadotubeServer) {
+      throw new Error("Veadotube Server Address not set");
+    }
+
+    initModules(modules);
+    // veadotube = new VeadtoubeService(runRequest.parameters.veadotubeServer);
+    initRemote(runRequest.parameters.veadotubeServer);
+
+    // Register Communicator
+    setupFrontendListeners(runRequest.modules.frontendCommunicator);
+
+    // Register Effects
+    for (const effect of AllVeadotubeEffects) {
+      runRequest.modules.effectManager.registerEffect(effect);
+    }
   },
 };
 
