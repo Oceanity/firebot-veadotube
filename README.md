@@ -9,7 +9,7 @@ This is a Firebot Script that will allow you to integrate Veadotube functionalit
 
 ### Setup
 
-- Download the latest (currently 2.0) version of [Veadotube](https://veado.tube/)
+- Download the latest (currently 2.0a) version of [Veadotube](https://veado.tube/)
 - In Veadotube, click `program settings` (icon with a cursor on it) and set the `server address` field to ensure the IP address and port do not change when program is reopened
   - To serve locally, set it to something like `127.0.0.1:65456` (if the port has issues, just change it to another 5 digit number)
 - In Firebot, go to Settings > Scripts
