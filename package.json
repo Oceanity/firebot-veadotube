@@ -2,8 +2,8 @@
   "name": "oceanity-veadotube",
   "displayName": "Veadotube (by Oceanity)",
   "scriptOutputName": "oceanityVeadotube",
-  "version": "0.1.0",
-  "description": "Adds ability to change Veadotube state in Firebot",
+  "version": "0.5.0",
+  "description": "Adds functionality for Veadotube in Firebot",
   "main": "",
   "scripts": {
     "build": "webpack",

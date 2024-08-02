@@ -4,7 +4,7 @@ import {
   VEADOTUBE_EVENT_SOURCE_ID,
   VEADOTUBE_STATE_CHANGED_EVENT_ID
 } from "../constants";
-import { peekState } from "../veadotube-remote";
+import { currentState } from "../veadotube-remote";
 
 const triggers: Record<string, any> = {}
 triggers[TriggerType.EVENT] = [
@@ -13,20 +13,12 @@ triggers[TriggerType.EVENT] = [
 triggers[TriggerType.MANUAL] = true;
 
 export const VeadotubeStateVariable: ReplaceVariable = {
-    definition: {
-        handle: "veadotubeState",
-        description: "Returns the name of the current Veadotube state.",
-        possibleDataOutput: ["text"]
-    },
-    evaluator: async (trigger: any) => {
-        const veadotubeState = trigger.metadata?.eventData?.veadotubeState;
-
-        if (veadotubeState) {
-            return veadotubeState.name;
-        }
-
-        const currentState = await peekState();
-
-        return currentState?.name ?? "Unknown State";
-    }
+  definition: {
+    handle: "veadotubeState",
+    description: "Returns the name of the current Veadotube state.",
+    possibleDataOutput: ["text"]
+  },
+  evaluator: async (trigger: any) => {    
+    return trigger.metadata?.eventData?.veadotubeState ?? currentState?.name ?? "Unknown State";
+  }
 };

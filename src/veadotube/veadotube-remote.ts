@@ -70,7 +70,7 @@ async function maintainConnection(serverAddress: string, type?: VeadotubeInstanc
         
         switch (namespace) {
           case "avatar state:peek":
-            triggerChangeStateEvent(message.payload.state.id);
+            triggerChangeStateEvent(message.payload.state);
             break;
         }
 
@@ -102,9 +102,24 @@ async function getStateById(stateId: VeadotubeStateId) {
   }
 }
 
+export async function getStateByName(stateName: string) {
+  try {
+    const currentList = await getStates();
+
+    const state = currentList.find(s => s.name === stateName);
+    if (!state) throw new Error("Unknown State");
+
+    return state;
+  } catch (error) { 
+    logger.error(getErrorMessage(error));
+    throw error;
+  } 
+}
+
 async function triggerChangeStateEvent(stateId: VeadotubeStateId) {
   try {
     const newState = await getStateById(stateId);
+    currentState = newState;
 
     eventManager.triggerEvent(
       VEADOTUBE_EVENT_SOURCE_ID,
@@ -158,6 +173,19 @@ export async function setState(stateId: string) {
     currentState = newState;
 
     return newState;
+  } catch (error) {
+    logger.error(getErrorMessage(error));
+  }
+}
+
+export async function setToRandomState() {
+  try {
+    const currentList = (await getStates()).filter(state => state.id !== currentState?.id);
+
+    const newState = currentList[Math.floor(Math.random() * currentList.length)];
+    if (!newState) throw new Error("No State Available");
+
+    return await setState(newState.id);
   } catch (error) {
     logger.error(getErrorMessage(error));
   }
