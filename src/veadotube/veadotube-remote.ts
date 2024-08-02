@@ -1,8 +1,12 @@
-import { logger } from "@oceanity/firebot-helpers/firebot";
+import { logger, eventManager } from "@oceanity/firebot-helpers/firebot";
 import * as WebSocket from "ws";
 import { stringifyPayload, veadotubePayloads } from "./messages";
 import { getErrorMessage } from "@oceanity/firebot-helpers/string";
 import { v4 as uuidv4 } from "uuid";
+import {
+  VEADOTUBE_EVENT_SOURCE_ID,
+  VEADOTUBE_STATE_CHANGED_EVENT_ID
+} from "./constants";
 
 const RECONNECT_INTERVAL = 5000;
 const STATE_ID = uuidv4();
@@ -79,32 +83,52 @@ export function initRemote(serverAddress: string, instanceType: VeadotubeInstanc
 
 export async function peekState() {
   try {
-    if (!states || !states.length) await getStates();
+    const currentStates = await getStates();
+
     const stateResponse = await call<VeadotubeAvatarStatePeekResponse>("PeekState", "avatar state:peek");
-    currentState = states.find(s => s.id === stateResponse.payload.state) ?? null;
-    console.log("peekState", stateResponse);
+    currentState = currentStates.find(s => s.id === stateResponse.payload.state) ?? null;
+
     return currentState;
   } catch (error) {
     logger.error(getErrorMessage(error));
   }
 }
 
-export async function getStates() {
+export async function getStates(): Promise<VeadotubeState[]> {
   try {
     const statesResponse = await call<VeadotubeStateListResponse>("ListStates", "avatar state:list");
+    if (!statesResponse) return [];
+
     states = statesResponse.payload.states;
-    console.log("getStates", statesResponse);
+
     return statesResponse.payload.states;
   } catch (error) {
     logger.error(getErrorMessage(error));
+    return [];
   }
 }
 
 export async function setState(stateId: string) {
   try {
-    const statesResponse = await call<VeadotubeAvatarStatePeekResponse>("SetState", "avatar state:peek", stateId);
-    console.log("setState", statesResponse);
-    return states.find(s => s.id === stateId);
+    const currentStates = await getStates();
+
+    const newState = currentStates.find(s => s.id === stateId);
+    if (!newState) throw new Error("Unknown State");
+
+    await call<VeadotubeAvatarStatePeekResponse>(
+      "SetState",
+      "avatar state:peek",
+      newState.id
+    );
+    currentState = newState;
+
+    eventManager.triggerEvent(
+      VEADOTUBE_EVENT_SOURCE_ID,
+      VEADOTUBE_STATE_CHANGED_EVENT_ID,
+      { veadotubeState: newState.name }
+    );
+
+    return newState;
   } catch (error) {
     logger.error(getErrorMessage(error));
   }
