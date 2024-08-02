@@ -12,6 +12,7 @@ let ws: WebSocket | null = null;
 let reconnectTimeout: NodeJS.Timeout | null = null;
 
 export let states: VeadotubeState[] = [];
+export let currentState: VeadotubeState | null = null;
 export let instanceType: string | null = null;
 
 type PendingRequest = {
@@ -74,6 +75,18 @@ async function maintainConnection(serverAddress: string, type?: VeadotubeInstanc
 
 export function initRemote(serverAddress: string, instanceType: VeadotubeInstanceType) {
   maintainConnection(serverAddress, instanceType);
+}
+
+export async function peekState() {
+  try {
+    if (!states || !states.length) await getStates();
+    const stateResponse = await call<VeadotubeAvatarStatePeekResponse>("PeekState", "avatar state:peek");
+    currentState = states.find(s => s.id === stateResponse.payload.state) ?? null;
+    console.log("peekState", stateResponse);
+    return currentState;
+  } catch (error) {
+    logger.error(getErrorMessage(error));
+  }
 }
 
 export async function getStates() {

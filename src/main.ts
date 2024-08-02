@@ -6,6 +6,7 @@ import { AllVeadotubeEffects } from "./veadotube/effects";
 import { setupFrontendListeners } from "./veadotube/communicator";
 import { initRemote } from "./veadotube/veadotube-remote";
 import { VeadotubeEventSource } from "./veadotube/events/veadotube-event-source";
+import { AllVeadotubeVariables } from "./veadotube/variables";
 
 export const { displayName: name, description, version, author } = packageJson;
 
@@ -70,6 +71,11 @@ const script: Firebot.CustomScript<Params> = {
 
     // Register Events
     modules.eventManager.registerEventSource(VeadotubeEventSource);
+
+    // Register Variables
+    for (const variable of AllVeadotubeVariables) {
+      modules.replaceVariableManager.registerReplaceVariable(variable);
+    }
   },
 };
 
