@@ -1,6 +1,6 @@
 # Veadotube Integration by Oceanity <sub style="color:gray">v0.5.0</sub>
 
-This is a Firebot Script that will allow you to integrate Spotify functionality and information into your Firebot setup. Due to very stict limits on Spotify's API, it does require that you make your own application in Spotify's developer portal and supply your own Client ID and Secret.
+This is a Firebot Script that will allow you to integrate Veadotube functionality and information into your Firebot setup.
 
 1. [Setup](#Setup)
 2. [Features](#Features)
@@ -9,6 +9,7 @@ This is a Firebot Script that will allow you to integrate Spotify functionality 
 
 ### Setup
 
+- Download the latest (currently 2.0) version of [Veadotube](https://veado.tube/)
 - In Veadotube, click `program settings` (icon with a cursor on it) and set the `server address` field to ensure the IP address and port do not change when program is reopened
   - To serve locally, set it to something like `127.0.0.1:65456` (if the port has issues, just change it to another 5 digit number)
 - In Firebot, go to Settings > Scripts
