@@ -64,11 +64,18 @@ async function maintainConnection(serverAddress: string, type?: VeadotubeInstanc
 
       ws.on("message", (data: WebSocket.Data) => {
         const message = parseResponseData(data);
-
         if (!message) return;
 
-        const request = pullPromise(getNamespaceFromEvent(message));
+        const namespace = getNamespaceFromEvent(message);
+        
+        switch (namespace) {
+          case "avatar state:peek":
+            triggerChangeStateEvent(message.payload.state.id);
+            break;
+        }
 
+        // Check for unresolved promises
+        const request = pullPromise(namespace);
         if (request) request.resolve(message);
       });
     } catch (error) {
@@ -81,13 +88,41 @@ export function initRemote(serverAddress: string, instanceType: VeadotubeInstanc
   maintainConnection(serverAddress, instanceType);
 }
 
+async function getStateById(stateId: VeadotubeStateId) {
+  try {
+    const currentList = await getStates();
+
+    const state = currentList.find(s => s.id === stateId);
+    if (!state) throw new Error("Unknown State");
+
+    return state
+  } catch (error) { 
+    logger.error(getErrorMessage(error));
+    throw error;
+  }
+}
+
+async function triggerChangeStateEvent(stateId: VeadotubeStateId) {
+  try {
+    const newState = await getStateById(stateId);
+
+    eventManager.triggerEvent(
+      VEADOTUBE_EVENT_SOURCE_ID,
+      VEADOTUBE_STATE_CHANGED_EVENT_ID,
+      { veadotubeState: newState.name }
+    );
+  } catch (error) {
+    logger.error(getErrorMessage(error));
+    throw error;
+  }
+}
+
 export async function peekState() {
   try {
-    const currentStates = await getStates();
-
     const stateResponse = await call<VeadotubeAvatarStatePeekResponse>("PeekState", "avatar state:peek");
-    currentState = currentStates.find(s => s.id === stateResponse.payload.state) ?? null;
+    if (!stateResponse) return null;
 
+    currentState = await getStateById(stateResponse.payload.state);
     return currentState;
   } catch (error) {
     logger.error(getErrorMessage(error));
@@ -121,12 +156,6 @@ export async function setState(stateId: string) {
       newState.id
     );
     currentState = newState;
-
-    eventManager.triggerEvent(
-      VEADOTUBE_EVENT_SOURCE_ID,
-      VEADOTUBE_STATE_CHANGED_EVENT_ID,
-      { veadotubeState: newState.name }
-    );
 
     return newState;
   } catch (error) {
