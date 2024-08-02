@@ -1,7 +1,9 @@
+import { instanceType as id } from "./veadotube-remote";
+
 export const stateEventPayload = (input: Record<string, string>) => Object.freeze({
     event: "payload",
     type: "stateEvents",
-    id: "mini",
+    id,
     payload: input
   });
 
@@ -16,3 +18,5 @@ export const veadotubePayloads = Object.freeze({
   PopState: (stateId: string) => stateEventPayload({ event: "pop", state: stateId }),
   CallStateThumb: (stateId: string) => stateEventPayload({ event: "thumb", state: stateId }),
 });
+
+export const stringifyPayload = (payload: any) => `nodes:${JSON.stringify(payload)}`;
