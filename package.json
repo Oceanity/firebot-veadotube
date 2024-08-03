@@ -2,7 +2,7 @@
   "name": "oceanity-veadotube",
   "displayName": "Veadotube (by Oceanity)",
   "scriptOutputName": "oceanityVeadotube",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Adds functionality for Veadotube in Firebot",
   "main": "",
   "scripts": {

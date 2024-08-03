@@ -3,8 +3,8 @@ import { getStateByName, setState, setToRandomState } from "../veadotube-remote"
 
 export const ChangeVeadotubeStateEffectType: Firebot.EffectType<{
   changeMode: string;
-  stateId: string;
-  stateName: string;
+  stateId?: string;
+  stateName?: string;
 }> = {
     definition: {
       id: "oceanity-veadotube:change-state",
@@ -40,7 +40,7 @@ export const ChangeVeadotubeStateEffectType: Firebot.EffectType<{
             input-title="State Name"
             placeholder-text="Name of the state to change to"
             model="effect.stateName"
-          ></firebot-input>
+          />
         </div>
       </eos-container>
     `,
@@ -66,7 +66,7 @@ export const ChangeVeadotubeStateEffectType: Firebot.EffectType<{
         backendCommunicator.fireEventAsync("oceanity-veadotube-get-states")
       ).then((states: VeadotubeState[]) => {
         $scope.states = states;
-        $scope.selected = $scope.states?.find((state: VeadotubeState) => state.name === $scope.effect.stateName);
+        $scope.selected = states.find((state: VeadotubeState) => state.id === $scope.effect.stateId);;
       });
     };
     $scope.getStates();
@@ -83,19 +83,22 @@ export const ChangeVeadotubeStateEffectType: Firebot.EffectType<{
   onTriggerEvent: async ({ effect }) => {
     switch (effect.changeMode) {
       case "list":
+        if (!effect.stateId) throw "State ID Required";
         await setState(effect.stateId);
-        break;
+        return true;
       case "name":
+        if (!effect.stateName) throw "State Name Required";
         const state = await getStateByName(effect.stateName);
         if (state) {
           await setState(state.id);
         }
-        break;
+        return true;
       case "random":
         await setToRandomState();
-        break;
+        return true;
     }
-    return true;
+    
+    throw "Invalid mode";
   }
 }
 

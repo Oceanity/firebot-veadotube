@@ -1,4 +1,4 @@
-# Veadotube Integration by Oceanity <sub style="color:gray">v0.5.0</sub>
+# Veadotube Integration by Oceanity <sub style="color:gray">v0.5.1</sub>
 
 This is a Firebot Script that will allow you to integrate Veadotube functionality and information into your Firebot setup.
 
