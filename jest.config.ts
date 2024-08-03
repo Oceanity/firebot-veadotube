@@ -7,6 +7,6 @@ module.exports = {
   testPathIgnorePatterns: ["/node_modules/", "/dist/"],
   moduleDirectories: ["node_modules", "<rootDir>"],
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-    prefix: `<rootDir>/`,
+    prefix: "<rootDir>/",
   }),
 };
