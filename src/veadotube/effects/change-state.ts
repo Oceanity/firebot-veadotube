@@ -66,7 +66,7 @@ export const ChangeVeadotubeStateEffectType: Firebot.EffectType<{
         backendCommunicator.fireEventAsync("oceanity-veadotube-get-states")
       ).then((states: VeadotubeState[]) => {
         $scope.states = states;
-        $scope.selected = $scope.states?.find((state: VeadotubeState) => state.name === $scope.effect.stateName);
+        $scope.selected = states.find((state: VeadotubeState) => state.id === $scope.effect.stateId);;
       });
     };
     $scope.getStates();
