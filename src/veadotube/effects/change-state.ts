@@ -40,7 +40,7 @@ export const ChangeVeadotubeStateEffectType: Firebot.EffectType<{
             input-title="State Name"
             placeholder-text="Name of the state to change to"
             model="effect.stateName"
-          ></firebot-input>
+          />
         </div>
       </eos-container>
     `,
