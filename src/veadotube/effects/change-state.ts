@@ -85,19 +85,20 @@ export const ChangeVeadotubeStateEffectType: Firebot.EffectType<{
       case "list":
         if (!effect.stateId) throw "State ID Required";
         await setState(effect.stateId);
-        break;
+        return true;
       case "name":
         if (!effect.stateName) throw "State Name Required";
         const state = await getStateByName(effect.stateName);
         if (state) {
           await setState(state.id);
         }
-        break;
+        return true;
       case "random":
         await setToRandomState();
-        break;
+        return true;
     }
-    return true;
+    
+    throw "Invalid mode";
   }
 }
 
