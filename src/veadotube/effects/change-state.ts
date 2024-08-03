@@ -3,8 +3,8 @@ import { getStateByName, setState, setToRandomState } from "../veadotube-remote"
 
 export const ChangeVeadotubeStateEffectType: Firebot.EffectType<{
   changeMode: string;
-  stateId: string;
-  stateName: string;
+  stateId?: string;
+  stateName?: string;
 }> = {
     definition: {
       id: "oceanity-veadotube:change-state",
@@ -83,9 +83,11 @@ export const ChangeVeadotubeStateEffectType: Firebot.EffectType<{
   onTriggerEvent: async ({ effect }) => {
     switch (effect.changeMode) {
       case "list":
+        if (!effect.stateId) throw "State ID Required";
         await setState(effect.stateId);
         break;
       case "name":
+        if (!effect.stateName) throw "State Name Required";
         const state = await getStateByName(effect.stateName);
         if (state) {
           await setState(state.id);
