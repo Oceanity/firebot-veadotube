@@ -1,12 +1,12 @@
-import { initModules } from "@oceanity/firebot-helpers/firebot";
 import { Firebot } from "@crowbartools/firebot-custom-scripts-types";
+import { initModules } from "@oceanity/firebot-helpers/firebot";
 import * as packageJson from "../package.json";
 import { VeadtoubeService } from "./veadotube";
-import { AllVeadotubeEffects } from "./veadotube/effects";
 import { setupFrontendListeners } from "./veadotube/communicator";
-import { initRemote } from "./veadotube/veadotube-remote";
+import { AllVeadotubeEffects } from "./veadotube/effects";
 import { VeadotubeEventSource } from "./veadotube/events/veadotube-event-source";
 import { AllVeadotubeVariables } from "./veadotube/variables";
+import { initRemote } from "./veadotube/veadotube-remote";
 
 export const { displayName: name, description, version, author } = packageJson;
 
@@ -31,16 +31,20 @@ const script: Firebot.CustomScript<Params> = {
     return {
       veadotubeServer: {
         type: "string",
+        title: "Veadotube Server",
         default: "127.0.0.1:<port>",
         description: "Veadotube Server Address",
-        secondaryDescription: "Enter your server IP address and port, be sure to set it in manually in `program settings` in Veadotube or the port will change every time you restart Veadotub",
+        secondaryDescription:
+          "Enter your server IP address and port, be sure to set it in manually in `program settings` in Veadotube or the port will change every time you restart Veadotub",
       },
       veadotubeInstanceType: {
         type: "string",
+        title: "Veadotube Instance Type",
         default: "mini",
         description: "Veadotube Instance Type",
-        secondaryDescription: "Input `mini` for Veadotube Mini, `live` for Veadotube Live, or `editor` for Veadotube Editor",
-      }
+        secondaryDescription:
+          "Input `mini` for Veadotube Mini, `live` for Veadotube Live, or `editor` for Veadotube Editor",
+      },
     };
   },
   run: (runRequest) => {
@@ -54,12 +58,18 @@ const script: Firebot.CustomScript<Params> = {
       throw new Error("Veadotube Instance Type not set");
     }
 
-    if (["mini", "live", "editor"].indexOf(parameters.veadotubeInstanceType) === -1) {
+    if (
+      ["mini", "live", "editor"].indexOf(parameters.veadotubeInstanceType) ===
+      -1
+    ) {
       throw new Error("Veadotube Instance Type not valid");
     }
 
     initModules(modules);
-    initRemote(parameters.veadotubeServer, parameters.veadotubeInstanceType as VeadotubeInstanceType);
+    initRemote(
+      parameters.veadotubeServer,
+      parameters.veadotubeInstanceType as VeadotubeInstanceType
+    );
 
     // Register Communicator
     setupFrontendListeners(modules.frontendCommunicator);
