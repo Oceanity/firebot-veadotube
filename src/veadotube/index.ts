@@ -1,14 +1,14 @@
-import * as WebSocket from 'ws';
 import { logger } from "@oceanity/firebot-helpers/firebot";
+import { randomUUID } from "crypto";
+import * as WebSocket from "ws";
 import { veadotubePayloads } from "./messages";
-import { randomUUID } from 'crypto';
 
 interface ResponsePromise {
   resolve: (value: any) => void;
   reject: (reason?: any) => void;
 }
 
-export class VeadtoubeService {
+export class VeadotubeService {
   private readonly ws: WebSocket;
   private readonly pendingRequests: Map<string, ResponsePromise>;
 
@@ -16,8 +16,12 @@ export class VeadtoubeService {
     this.ws = new WebSocket(`ws://${serverAddress}?n=OceanityFirebotScript`);
     this.pendingRequests = new Map();
 
-    this.ws.addEventListener('open', (event: WebSocket.Event) => this.onOpen(event));
-    this.ws.addEventListener('message', (event: WebSocket.MessageEvent) => this.onMessage(event));
+    this.ws.addEventListener("open", (event: WebSocket.Event) =>
+      this.onOpen(event)
+    );
+    this.ws.addEventListener("message", (event: WebSocket.MessageEvent) =>
+      this.onMessage(event)
+    );
   }
 
   private async onOpen(event: WebSocket.Event) {
