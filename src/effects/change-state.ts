@@ -1,19 +1,23 @@
 import { Firebot } from "@crowbartools/firebot-custom-scripts-types";
-import { getStateByName, setState, setToRandomState } from "../veadotube-remote";
+import {
+  getStateByName,
+  setState,
+  setToRandomState,
+} from "../veadotube/veadotube-remote";
 
 export const ChangeVeadotubeStateEffectType: Firebot.EffectType<{
   changeMode: string;
   stateId?: string;
   stateName?: string;
 }> = {
-    definition: {
-      id: "oceanity-veadotube:change-state",
-      name: "Veadotube: Change State",
-      description: "Changes the active Veadotube State",
-      icon: "fad fa-deer",
-      categories: ["common"]
-    },
-    optionsTemplate: `
+  definition: {
+    id: "oceanity-veadotube:change-state",
+    name: "Veadotube: Change State",
+    description: "Changes the active Veadotube State",
+    icon: "fad fa-deer",
+    categories: ["common"],
+  },
+  optionsTemplate: `
       <eos-container header="Change Mode" pad-top="true">
         <dropdown-select
           options="changeModes"
@@ -48,7 +52,7 @@ export const ChangeVeadotubeStateEffectType: Firebot.EffectType<{
     $scope.changeModes = Object.freeze({
       list: "Pick From List",
       name: "By Name/Variable",
-      random: "Random State"
+      random: "Random State",
     });
     $scope.isObsConfigured = false;
     $scope.states = [];
@@ -66,7 +70,9 @@ export const ChangeVeadotubeStateEffectType: Firebot.EffectType<{
         backendCommunicator.fireEventAsync("oceanity-veadotube-get-states")
       ).then((states: VeadotubeState[]) => {
         $scope.states = states;
-        $scope.selected = states.find((state: VeadotubeState) => state.id === $scope.effect.stateId);;
+        $scope.selected = states.find(
+          (state: VeadotubeState) => state.id === $scope.effect.stateId
+        );
       });
     };
     $scope.getStates();
@@ -97,8 +103,7 @@ export const ChangeVeadotubeStateEffectType: Firebot.EffectType<{
         await setToRandomState();
         return true;
     }
-    
-    throw "Invalid mode";
-  }
-}
 
+    throw "Invalid mode";
+  },
+};
