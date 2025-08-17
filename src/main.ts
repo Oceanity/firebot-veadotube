@@ -1,7 +1,7 @@
 import { Firebot } from "@crowbartools/firebot-custom-scripts-types";
 import { initModules } from "@oceanity/firebot-helpers/firebot";
 import * as packageJson from "../package.json";
-import { VeadtoubeService } from "./veadotube";
+import { VeadotubeService } from "./veadotube";
 import { setupFrontendListeners } from "./veadotube/communicator";
 import { AllVeadotubeEffects } from "./veadotube/effects";
 import { VeadotubeEventSource } from "./veadotube/events/veadotube-event-source";
@@ -10,7 +10,7 @@ import { initRemote } from "./veadotube/veadotube-remote";
 
 export const { displayName: name, description, version, author } = packageJson;
 
-export let veadotube: VeadtoubeService;
+export let veadotube: VeadotubeService;
 
 interface Params {
   veadotubeServer: string;
@@ -35,7 +35,7 @@ const script: Firebot.CustomScript<Params> = {
         default: "127.0.0.1:<port>",
         description: "Veadotube Server Address",
         secondaryDescription:
-          "Enter your server IP address and port, be sure to set it in manually in `program settings` in Veadotube or the port will change every time you restart Veadotub",
+          "Enter your server IP address and port, be sure to set it in manually in `program settings` in Veadotube or the port will change every time you restart Veadotube",
       },
       veadotubeInstanceType: {
         type: "string",
