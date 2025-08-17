@@ -16,6 +16,10 @@ export const {
 
 export const VEADOTUBE_INTEGRATION_FIREBOT_VERSION = "5";
 export const VEADOTUBE_INTEGRATION_NAME_WITH_AUTHOR = `${VEADOTUBE_INTEGRATION_NAME} (by ${VEADOTUBE_INTEGRATION_AUTHOR})`;
+export const VEADOTUBE_INTEGRATION_GITHUB_PACKAGE_URL =
+  "https://raw.githubusercontent.com/Oceanity/firebot-veadotube/refs/heads/main/package.json";
+export const VEADOTUBE_INTEGRATION_GITHUB_LATEST_RELEASE_URL =
+  "https://github.com/Oceanity/firebot-veadotube/releases/latest";
 
 export const VEADOTUBE_DEFAULT_ADDRESS = "127.0.0.1:65456";
 export const VEADOTUBE_DEFAULT_INSTANCE_TYPE = "mini";

@@ -2,10 +2,13 @@ import {
   Firebot,
   Integration,
 } from "@crowbartools/firebot-custom-scripts-types";
+import { NotificationType } from "@crowbartools/firebot-custom-scripts-types/types/modules/notification-manager";
 import {
   initModules,
   integrationManager,
+  notificationManager,
 } from "@oceanity/firebot-helpers/firebot";
+import { checkRemoteVersion } from "@oceanity/firebot-helpers/package";
 import * as packageJson from "../package.json";
 import {
   VEADOTUBE_EVENT_SOURCE,
@@ -13,6 +16,8 @@ import {
   VEADOTUBE_INTEGRATION_DEFINITION,
   VEADOTUBE_INTEGRATION_DESCRIPTION,
   VEADOTUBE_INTEGRATION_FIREBOT_VERSION,
+  VEADOTUBE_INTEGRATION_GITHUB_LATEST_RELEASE_URL,
+  VEADOTUBE_INTEGRATION_GITHUB_PACKAGE_URL,
   VEADOTUBE_INTEGRATION_NAME_WITH_AUTHOR,
   VEADOTUBE_INTEGRATION_VERSION,
 } from "./constants";
@@ -38,10 +43,27 @@ const script: Firebot.CustomScript = {
     };
   },
   getDefaultParameters: () => ({}),
-  run: (runRequest) => {
+  run: async (runRequest) => {
     const { modules } = runRequest;
 
     initModules(modules);
+
+    // check remote version
+    const response = await checkRemoteVersion(
+      VEADOTUBE_INTEGRATION_VERSION,
+      VEADOTUBE_INTEGRATION_GITHUB_PACKAGE_URL
+    );
+
+    if (response.isRemoteNewer) {
+      notificationManager.addNotification(
+        {
+          type: "update" as NotificationType,
+          title: "Veadotube Integration update available!",
+          message: `Oceanity has released an update to the Veadotube Integration (${VEADOTUBE_INTEGRATION_VERSION} -> ${response.version}), go to ${VEADOTUBE_INTEGRATION_GITHUB_LATEST_RELEASE_URL} to download the latest version!`,
+        },
+        false
+      );
+    }
 
     const integration: Integration<VeadotubeIntegrationSettings> = {
       definition: VEADOTUBE_INTEGRATION_DEFINITION,
