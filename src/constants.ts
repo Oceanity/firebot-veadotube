@@ -83,3 +83,9 @@ export const VEADOTUBE_EVENT_SOURCE: EventSource = {
     },
   ],
 };
+
+//#region Effect Names
+
+export const VEADOTUBE_STATE_CHANGED_EVENT_ID = "state-changed";
+
+//#endregion
