@@ -1,15 +1,15 @@
-import { logger, eventManager } from "@oceanity/firebot-helpers/firebot";
-import * as WebSocket from "ws";
-import { stringifyPayload, veadotubePayloads } from "./messages";
+import { eventManager, logger } from "@oceanity/firebot-helpers/firebot";
 import { getErrorMessage } from "@oceanity/firebot-helpers/string";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidV4 } from "uuid";
+import * as WebSocket from "ws";
 import {
-  VEADOTUBE_EVENT_SOURCE_ID,
-  VEADOTUBE_STATE_CHANGED_EVENT_ID
-} from "./constants";
+  VEADOTUBE_INTEGRATION_ID,
+  VEADOTUBE_STATE_CHANGED_EVENT_ID,
+} from "../constants";
+import { stringifyPayload, veadotubePayloads } from "./messages";
 
 const RECONNECT_INTERVAL = 5000;
-const STATE_ID = uuidv4();
+const STATE_ID = uuidV4();
 
 let connected = false;
 let ws: WebSocket | null = null;
@@ -22,10 +22,13 @@ export let instanceType: string | null = null;
 type PendingRequest = {
   resolve: (value: any) => void;
   reject: (reason?: any) => void;
-}
+};
 const pendingRequests: Record<string, PendingRequest[] | null> = {};
 
-async function maintainConnection(serverAddress: string, type?: VeadotubeInstanceType) {
+async function maintainConnection(
+  serverAddress: string,
+  type?: VeadotubeInstanceType
+) {
   if (type) instanceType = type;
 
   if (reconnectTimeout) {
@@ -53,13 +56,19 @@ async function maintainConnection(serverAddress: string, type?: VeadotubeInstanc
       ws.on("error", (error) => {
         logger.error("Error connecting to Veadotube Server", error);
         connected = false;
-        reconnectTimeout = setTimeout(() => maintainConnection(serverAddress), RECONNECT_INTERVAL);
+        reconnectTimeout = setTimeout(
+          () => maintainConnection(serverAddress),
+          RECONNECT_INTERVAL
+        );
       });
 
       ws.on("close", () => {
         logger.error("Disconnected from Veadotube Server");
         connected = false;
-        reconnectTimeout = setTimeout(() => maintainConnection(serverAddress), RECONNECT_INTERVAL);
+        reconnectTimeout = setTimeout(
+          () => maintainConnection(serverAddress),
+          RECONNECT_INTERVAL
+        );
       });
 
       ws.on("message", (data: WebSocket.Data) => {
@@ -67,7 +76,7 @@ async function maintainConnection(serverAddress: string, type?: VeadotubeInstanc
         if (!message) return;
 
         const namespace = getNamespaceFromEvent(message);
-        
+
         switch (namespace) {
           case "avatar state:peek":
             triggerChangeStateEvent(message.payload.state);
@@ -84,7 +93,10 @@ async function maintainConnection(serverAddress: string, type?: VeadotubeInstanc
   }
 }
 
-export function initRemote(serverAddress: string, instanceType: VeadotubeInstanceType) {
+export function initRemote(
+  serverAddress: string,
+  instanceType: VeadotubeInstanceType
+) {
   maintainConnection(serverAddress, instanceType);
 }
 
@@ -92,11 +104,11 @@ async function getStateById(stateId: VeadotubeStateId) {
   try {
     const currentList = await getStates();
 
-    const state = currentList.find(s => s.id === stateId);
+    const state = currentList.find((s) => s.id === stateId);
     if (!state) throw new Error("Unknown State");
 
-    return state
-  } catch (error) { 
+    return state;
+  } catch (error) {
     logger.error(getErrorMessage(error));
     throw error;
   }
@@ -106,14 +118,14 @@ export async function getStateByName(stateName: string) {
   try {
     const currentList = await getStates();
 
-    const state = currentList.find(s => s.name === stateName);
+    const state = currentList.find((s) => s.name === stateName);
     if (!state) throw new Error("Unknown State");
 
     return state;
-  } catch (error) { 
+  } catch (error) {
     logger.error(getErrorMessage(error));
     throw error;
-  } 
+  }
 }
 
 async function triggerChangeStateEvent(stateId: VeadotubeStateId) {
@@ -122,7 +134,7 @@ async function triggerChangeStateEvent(stateId: VeadotubeStateId) {
     currentState = newState;
 
     eventManager.triggerEvent(
-      VEADOTUBE_EVENT_SOURCE_ID,
+      VEADOTUBE_INTEGRATION_ID,
       VEADOTUBE_STATE_CHANGED_EVENT_ID,
       { veadotubeState: newState.name }
     );
@@ -134,7 +146,10 @@ async function triggerChangeStateEvent(stateId: VeadotubeStateId) {
 
 export async function peekState() {
   try {
-    const stateResponse = await call<VeadotubeAvatarStatePeekResponse>("PeekState", "avatar state:peek");
+    const stateResponse = await call<VeadotubeAvatarStatePeekResponse>(
+      "PeekState",
+      "avatar state:peek"
+    );
     if (!stateResponse) return null;
 
     currentState = await getStateById(stateResponse.payload.state);
@@ -146,7 +161,10 @@ export async function peekState() {
 
 export async function getStates(): Promise<VeadotubeState[]> {
   try {
-    const statesResponse = await call<VeadotubeStateListResponse>("ListStates", "avatar state:list");
+    const statesResponse = await call<VeadotubeStateListResponse>(
+      "ListStates",
+      "avatar state:list"
+    );
     if (!statesResponse) return [];
 
     states = statesResponse.payload.states;
@@ -162,7 +180,7 @@ export async function setState(stateId: string) {
   try {
     const currentStates = await getStates();
 
-    const newState = currentStates.find(s => s.id === stateId);
+    const newState = currentStates.find((s) => s.id === stateId);
     if (!newState) throw new Error("Unknown State");
 
     await call<VeadotubeAvatarStatePeekResponse>(
@@ -180,9 +198,12 @@ export async function setState(stateId: string) {
 
 export async function setToRandomState() {
   try {
-    const currentList = (await getStates()).filter(state => state.id !== currentState?.id);
+    const currentList = (await getStates()).filter(
+      (state) => state.id !== currentState?.id
+    );
 
-    const newState = currentList[Math.floor(Math.random() * currentList.length)];
+    const newState =
+      currentList[Math.floor(Math.random() * currentList.length)];
     if (!newState) throw new Error("No State Available");
 
     return await setState(newState.id);
@@ -192,7 +213,11 @@ export async function setToRandomState() {
 }
 
 // Helper functions
-function call<T>(method: keyof typeof veadotubePayloads, namespace: VeadotubeNamespace, token?: string): Promise<T> {
+function call<T>(
+  method: keyof typeof veadotubePayloads,
+  namespace: VeadotubeNamespace,
+  token?: string
+): Promise<T> {
   return new Promise((resolve, reject) => {
     if (!connected || !ws) {
       resolve([] as unknown as T);
@@ -205,11 +230,15 @@ function call<T>(method: keyof typeof veadotubePayloads, namespace: VeadotubeNam
   });
 }
 
-function storePromise(namespace: VeadotubeNamespace, resolve: (value: any) => void, reject: (reason?: any) => void) {
+function storePromise(
+  namespace: VeadotubeNamespace,
+  resolve: (value: any) => void,
+  reject: (reason?: any) => void
+) {
   if (!pendingRequests[namespace]) {
     pendingRequests[namespace] = [];
   }
-  
+
   pendingRequests[namespace].push({ resolve, reject });
 }
 
@@ -221,7 +250,8 @@ function pullPromise(name: VeadotubeNamespace) {
 }
 
 function parseResponseData(data: WebSocket.Data) {
-  const dataString = data.toString()
+  const dataString = data
+    .toString()
     .replace(/.*nodes:/, "")
     .replace(/\u0000/g, "");
 
@@ -233,4 +263,6 @@ function parseResponseData(data: WebSocket.Data) {
   }
 }
 
-const getNamespaceFromEvent = (stateEvent: VeadotubeStateEventResponse): VeadotubeNamespace => `${stateEvent.name}:${stateEvent.payload.event}`;
+const getNamespaceFromEvent = (
+  stateEvent: VeadotubeStateEventResponse
+): VeadotubeNamespace => `${stateEvent.name}:${stateEvent.payload.event}`;

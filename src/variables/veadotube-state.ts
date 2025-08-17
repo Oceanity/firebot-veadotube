@@ -1,7 +1,9 @@
 import { ReplaceVariable } from "@crowbartools/firebot-custom-scripts-types/types/modules/replace-variable-manager";
-import { VEADOTUBE_INTEGRATION_ID } from "../constants";
+import {
+  VEADOTUBE_INTEGRATION_ID,
+  VEADOTUBE_STATE_CHANGED_EVENT_ID,
+} from "../constants";
 import { Trigger as TriggerType } from "../veadotube/common";
-import { VEADOTUBE_STATE_CHANGED_EVENT_ID } from "../veadotube/constants";
 import { currentState } from "../veadotube/veadotube-remote";
 
 const triggers: Record<string, any> = {};
