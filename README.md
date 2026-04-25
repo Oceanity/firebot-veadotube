@@ -1,3 +1,9 @@
+# ${{\color{red}READ ME FIRST}}\$
+
+This script was made before Veadotube had good documentation and was a rough reverse-engineering of Veadotube Mini's WebSocket protocol, but recent updates to Mini as well as the beta release of Veadotube Studio have made this script unreliable. It would need to be rewritten from scratch to properly work with all versions of Veadotube and I do not have immediate plans to do so.
+
+Feel free to continue using the script, but just be aware that it is only compatible with Veadotube Mini (and not even necessarily all versions of Veadotube Mini) and that I am currently not offering support to it.
+
 # Veadotube Integration by Oceanity <sub style="color:gray">v0.5.1</sub>
 
 This is a Firebot Script that will allow you to integrate Veadotube functionality and information into your Firebot setup.
