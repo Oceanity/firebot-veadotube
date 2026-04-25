@@ -1,4 +1,4 @@
-# ${{\color{red}READ ME FIRST}}\$
+# IMPORTANT - Read Me First!
 
 This script was made before Veadotube had good documentation and was a rough reverse-engineering of Veadotube Mini's WebSocket protocol, but recent updates to Mini as well as the beta release of Veadotube Studio have made this script unreliable. It would need to be rewritten from scratch to properly work with all versions of Veadotube and I do not have immediate plans to do so.
 
